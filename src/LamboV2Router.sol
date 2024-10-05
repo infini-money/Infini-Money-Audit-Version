@@ -5,7 +5,8 @@ import './libraries/UniswapV2Library.sol';
 import {IPool} from "./interfaces/Uniswap/IPool.sol";
 import {VirtualToken} from "./VirtualToken.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {console2} from "forge-std/console2.sol";
+import {V2Factory} from "./V2Factory.sol";
+
 
 contract LamboV2Router {
     address public constant NATIVE_TOKEN = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -22,19 +23,36 @@ contract LamboV2Router {
         uniswapV2Factory = _uniswapV2Factory;
     }
 
+    function createLaunchPadAndInitialBuy(
+        string memory name, 
+        string memory tickname,
+        uint256 virtualLiquidityAmount,
+        address virtualLiquidityToken,
+        uint256 buyAmount
+    ) public payable returns (address quoteToken, address pool, uint256 amountYOut) {
+        (quoteToken, pool) = V2Factory(lamboFactory).createLaunchPad(name, tickname, virtualLiquidityAmount, virtualLiquidityToken);
+
+        amountYOut = _buyQuote(quoteToken, buyAmount, 0);
+    }
+
     function buyQuote(
         address quoteToken,
         uint256 amountXIn,
         uint256 minReturn
     ) public payable returns(uint256 amountYOut) {
+        amountYOut = _buyQuote(quoteToken, amountXIn, minReturn);
+    }
+
+    function _buyQuote(
+    address quoteToken,
+        uint256 amountXIn,
+        uint256 minReturn
+    ) internal returns(uint256 amountYOut) {
         require(msg.value >= amountXIn, "Insufficient msg.value");
         
         address pair = UniswapV2Library.pairFor(uniswapV2Factory, vETH, quoteToken);
         
         (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, vETH, quoteToken);
-
-        console2.log("reserveIn: ", reserveIn );
-        console2.log("reserveOut: ", reserveOut);
 
         // Calculate the amount of quoteToken to be received
         amountYOut = UniswapV2Library.getAmountOut(amountXIn, reserveIn, reserveOut);

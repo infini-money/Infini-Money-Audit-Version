@@ -13,6 +13,8 @@ import {IPoolFactory} from "./interfaces/Uniswap/IPoolFactory.sol";
 import {LamboV2Router} from "./LamboV2Router.sol";
 
 contract V2Factory {
+    
+    uint256 public tokenNonce;
     address public multiSig;
     address payable public dexFees;
     address public virtualLiquidityToken;
@@ -23,6 +25,7 @@ contract V2Factory {
     event PoolCreated(address quoteToken, address pool);
 
     constructor(address _multiSig, address payable _dexFees, address _lamboTokenImplementation, address _virtualLiquidityToken) {
+        tokenNonce = 1;
         multiSig = _multiSig;   
         dexFees = _dexFees;
         virtualLiquidityToken = _virtualLiquidityToken;
@@ -45,7 +48,7 @@ contract V2Factory {
     ) internal returns (address quoteToken) {
 
         // Create a deterministic clone of the LamboToken implementation
-        bytes32 salt = keccak256(abi.encodePacked(name, tickname, block.timestamp));
+        bytes32 salt = keccak256(abi.encodePacked(name, tickname, tokenNonce));
         quoteToken = Clones.cloneDeterministic(lamboTokenImplementation, salt);
 
         // Initialize the cloned LamboToken
@@ -53,6 +56,7 @@ contract V2Factory {
             name, 
             tickname
         );
+        tokenNonce = tokenNonce + 1;
 
         emit TokenDeployed(quoteToken);
     }
@@ -75,19 +79,6 @@ contract V2Factory {
         emit PoolCreated(quoteToken, pool);
     }
 
-    function createLaunchPadAndInitialBuy(
-        string memory name, 
-        string memory tickname,
-        uint256 virtualLiquidityAmount,
-        address virtualLiquidityToken,
-        uint256 buyAmount
-    ) public payable returns (address quoteToken, address pool) {
-        (quoteToken, pool) = createLaunchPad(name, tickname, virtualLiquidityAmount, virtualLiquidityToken);
 
-        // minReturn can be set to 0 because initial buy
-        LamboV2Router(payable(lamboRouter)).buyQuote{value: buyAmount}(quoteToken, buyAmount, 0);
-
-        emit PoolCreated(quoteToken, pool);
-    }
 
 }

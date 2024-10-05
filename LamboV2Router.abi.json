@@ -68,6 +68,55 @@
   },
   {
     "type": "function",
+    "name": "createLaunchPadAndInitialBuy",
+    "inputs": [
+      {
+        "name": "name",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "tickname",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "virtualLiquidityAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "virtualLiquidityToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "buyAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "quoteToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "pool",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "amountYOut",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
     "name": "lamboFactory",
     "inputs": [],
     "outputs": [

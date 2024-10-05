@@ -45,6 +45,7 @@ contract DeployAll is Script {
 
         vETH.updateFactory(address(factory));
         vETH.addToWhiteList(address(lamboRouter));
+        vETH.addToWhiteList(multiSigAdmin);
         factory.setLamboRouter(address(lamboRouter));
 
         vm.stopBroadcast();

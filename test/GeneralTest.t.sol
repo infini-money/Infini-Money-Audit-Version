@@ -21,12 +21,32 @@ contract GeneralTest is BaseTest {
         uint256 gasUsed = gasStart - gasleft();
         // 123544
         console2.log("BuyQuote Gas Used: ", gasUsed);
+        vm.assertEq(IERC20(quoteToken).balanceOf(address(this)), amountOut);
 
         IERC20(quoteToken).approve(address(lamboRouter), amountOut);
         
         gasStart = gasleft();
         uint256 amountXOut = lamboRouter.sellQuote(quoteToken, amountOut, 0);
         gasUsed = gasStart - gasleft();
+        // 111287
+        console2.log("SellQuote Gas Used: ", gasUsed);
+
+        // nearly 0.003
+        console2.log("amountXOut: ", amountXOut);
+        
+    }
+
+        // vETH <-> Meme into Uniswap
+    function test_createLaunchPadWithInitalBuy() public {
+        (address quoteToken, address pool, uint256 amountYOut) = lamboRouter.createLaunchPadAndInitialBuy{value: 10 ether}("LamboTokenV2", "LAMBO", 10 ether, address(vETH), 10 ether);
+  
+        console2.log("amountYOut: ", amountYOut);
+        vm.assertEq(IERC20(quoteToken).balanceOf(address(this)), amountYOut);
+        IERC20(quoteToken).approve(address(lamboRouter), amountYOut);
+        
+        uint256 gasStart = gasleft();
+        uint256 amountXOut = lamboRouter.sellQuote(quoteToken, amountYOut, 0);
+        uint256 gasUsed = gasStart - gasleft();
         // 111287
         console2.log("SellQuote Gas Used: ", gasUsed);
 
@@ -47,25 +67,11 @@ contract GeneralTest is BaseTest {
         vm.stopPrank();
     }
 
-    function test_initailBuy_and_withdraw() public {
-        // (address quoteToken, address pool) = factory.createLaunchPad("LamboTokenV2", "LAMBO", 10 ether, address(vETH));
-        uint256 buyAmount = 10 ether;
-        (address quoteToken, address pool) = factory.createLaunchPadAndInitialBuy{value: buyAmount}(
-            "LamboTokenV2", 
-            "LAMBO", 
-            10 ether, 
-            address(vETH), 
-            buyAmount
-        );
-      
-        // withdraw gas 
-        vm.startPrank(multiSigAdmin);
-        uint256 initialBalance = address(multiSigAdmin).balance;
-        vETH.withdraw(10 ether);
-        uint256 finalBalance = address(multiSigAdmin).balance;
-        assert(finalBalance == initialBalance + 10 ether);
-        vm.stopPrank();
+    function test_create_uniswapV3_pool() public {
+        
+
     }
+
 
     // vETH <-> ETH into Curve
     // function test_createPool_ETHAndvETH_on_Curve() public {
@@ -112,6 +118,7 @@ contract GeneralTest is BaseTest {
     //     IStableNGPool(curvePool).add_liquidity(_amounts, 0, address(this));
 
     // }
+
     // function test_1inchV6_aggregator_from_Curve_to_UnsiwapV2() public {
     //     // 1inchV6 Router 地址
     //     // 替换为实际的1inchV6 Router地址

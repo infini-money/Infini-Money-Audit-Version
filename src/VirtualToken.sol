@@ -106,7 +106,7 @@ contract VirtualToken is ERC20, ReentrancyGuard {
 
     function _transferAssetToUser(uint256 amount) internal {
         if (underlyingToken == LaunchPadUtils.NATIVE_TOKEN) {
-            require(address(this).balance > amount, "Insufficient balance");
+            require(address(this).balance >= amount, "Insufficient ETH balance");
             payable(msg.sender).transfer(amount);
         } else {
             IERC20(underlyingToken).transfer(msg.sender, amount);
