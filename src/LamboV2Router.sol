@@ -15,7 +15,8 @@ contract LamboV2Router {
     address public immutable lamboFactory;
     address public immutable uniswapV2Factory;
 
-    event Swap(address indexed sender, uint256 amountXIn, uint256 amountYOut, address indexed vETH, address indexed quoteToken);
+    event BuyQuote(address quoteToken, uint256 amountXIn, uint256 amountXOut);
+    event SellQuote(address quoteToken, uint256 amountYIn, uint256 amountXOut);
 
     constructor(address _vETH, address _uniswapV2Factory, address _lamboFactory) public {
         vETH = _vETH;
@@ -35,47 +36,37 @@ contract LamboV2Router {
         amountYOut = _buyQuote(quoteToken, buyAmount, 0);
     }
 
+    function getBuyQuote(
+        address targetToken,
+        uint256 amountIn
+    ) public view returns(uint256 amount) {
+        // TIPs: ETH -> vETH = 1:1
+        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, vETH, targetToken);
+
+        // Calculate the amount of Meme to be received
+        amount = UniswapV2Library.getAmountOut(amountIn, reserveIn, reserveOut);
+    }
+
+    function getSellQuote(
+        address targetToken,
+        uint256 amountIn
+    ) public view returns(uint256 amount) {
+        // TIPS: vETH -> ETH = 1: 1 - fee
+        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, targetToken, vETH);
+
+        // get vETH Amount
+        uint256 amountXOut = UniswapV2Library.getAmountOut(amountIn, reserveIn, reserveOut);
+
+        // vETH -> wETH
+        amount = VirtualToken(vETH).getCashOutQuote(amountXOut);
+    }
+
     function buyQuote(
         address quoteToken,
         uint256 amountXIn,
         uint256 minReturn
     ) public payable returns(uint256 amountYOut) {
         amountYOut = _buyQuote(quoteToken, amountXIn, minReturn);
-    }
-
-    function _buyQuote(
-    address quoteToken,
-        uint256 amountXIn,
-        uint256 minReturn
-    ) internal returns(uint256 amountYOut) {
-        require(msg.value >= amountXIn, "Insufficient msg.value");
-        
-        address pair = UniswapV2Library.pairFor(uniswapV2Factory, vETH, quoteToken);
-        
-        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, vETH, quoteToken);
-
-        // Calculate the amount of quoteToken to be received
-        amountYOut = UniswapV2Library.getAmountOut(amountXIn, reserveIn, reserveOut);
-        require(amountYOut >= minReturn, "Insufficient output amount");
-
-        // Transfer vETH to the pair
-        VirtualToken(vETH).cashIn{value: amountXIn}();
-        assert(VirtualToken(vETH).transfer(pair, amountXIn));
-
-        // Perform the swap
-        (uint amount0Out, uint amount1Out) = vETH < quoteToken ? (uint(0), amountYOut) : (amountYOut, uint(0));
-        IUniswapV2Pair(pair).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
-
-        // Check if the received amount meets the minimum return requirement
-        require(IERC20(quoteToken).balanceOf(msg.sender) >= minReturn, "MinReturn Error");
-
-        // Refund excess ETH if any, left 1 wei to save gas
-        if (msg.value > amountXIn + 1) {
-            payable(msg.sender).transfer(msg.value - amountXIn - 1);
-        }
-
-        // Emit the swap event
-        emit Swap(msg.sender, amountXIn, amountYOut, vETH, quoteToken);
     }
 
     function sellQuote(
@@ -101,14 +92,51 @@ contract LamboV2Router {
         IUniswapV2Pair(pair).swap(amount0Out, amount1Out, address(this), new bytes(0));
 
         // Convert vETH to ETH and send to the user
-        VirtualToken(vETH).cashOut(amountXOut);
+        // amountXOut will get the fee
+        amountXOut = VirtualToken(vETH).cashOut(amountXOut);
         payable(msg.sender).transfer(amountXOut);
 
         // Check if the received amount meets the minimum return requirement
         require(amountXOut >= minReturn, "MinReturn Error");
 
         // Emit the swap event
-        emit Swap(msg.sender, amountYIn, amountXOut, vETH, quoteToken);
+        emit SellQuote(quoteToken, amountYIn, amountXOut);
+
+    }
+
+    function _buyQuote(
+        address quoteToken,
+        uint256 amountXIn,
+        uint256 minReturn
+    ) internal returns(uint256 amountYOut) {
+        require(msg.value >= amountXIn, "Insufficient msg.value");
+        
+        address pair = UniswapV2Library.pairFor(uniswapV2Factory, vETH, quoteToken);
+        
+        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, vETH, quoteToken);
+
+        // Calculate the amount of quoteToken to be received
+        amountYOut = UniswapV2Library.getAmountOut(amountXIn, reserveIn, reserveOut);
+        require(amountYOut >= minReturn, "Insufficient output amount");
+
+        // Transfer vETH to the pair
+        VirtualToken(vETH).cashIn{value: amountXIn}();
+        assert(VirtualToken(vETH).transfer(pair, amountXIn));
+
+        // Perform the swap
+        (uint amount0Out, uint amount1Out) = vETH < quoteToken ? (uint(0), amountYOut) : (amountYOut, uint(0));
+        IUniswapV2Pair(pair).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
+
+        // Check if the received amount meets the minimum return requirement
+        require(amountYOut >= minReturn, "MinReturn Error");
+
+        // Refund excess ETH if any, left 1 wei to save gas
+        if (msg.value > amountXIn + 1) {
+            payable(msg.sender).transfer(msg.value - amountXIn - 1);
+        }
+        
+        emit BuyQuote(quoteToken, amountXIn, amountYOut);
+
     }
 
     receive() external payable {}

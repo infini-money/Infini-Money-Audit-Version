@@ -27,7 +27,9 @@ contract DeployAll is Script {
         
         VirtualToken vETH = new VirtualToken("vETH", "vETH", LaunchPadUtils.NATIVE_TOKEN, multiSigAdmin);
         console2.log("VirtualToken address:", address(vETH));
-        
+        vm.stopBroadcast();
+
+        vm.startBroadcast(privateKey);
         V2Factory factory = new V2Factory(
             multiSigAdmin,
             payable(address(dexFees)),
@@ -43,12 +45,16 @@ contract DeployAll is Script {
         );
         console2.log("LamboV2Router address:", address(lamboRouter));
 
+        vm.stopBroadcast();
+
+
+        vm.startBroadcast(privateKey);
         vETH.updateFactory(address(factory));
         vETH.addToWhiteList(address(lamboRouter));
         vETH.addToWhiteList(multiSigAdmin);
         factory.setLamboRouter(address(lamboRouter));
-
         vm.stopBroadcast();
+        
     }
 
 }

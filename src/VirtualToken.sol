@@ -10,6 +10,8 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     address public mutiSigAdmin;
     address public factory;
     address public underlyingToken;
+    uint256 public cashOutFee;
+
     mapping(address => uint256) public _debt;
     mapping(address => bool) public whiteList;
 
@@ -44,10 +46,15 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     ) ERC20(name, symbol) {
         underlyingToken = _underlyingToken;
         mutiSigAdmin = _mutiSigAdmin;
+        cashOutFee = 20; 
     }        
     
     function updateFactory(address _factory) external onlyMutiSigAdmin {
         factory = _factory;
+    }
+
+    function updateCashOutFee(uint256 _cashOutFee) external onlyMutiSigAdmin {
+        cashOutFee = _cashOutFee;
     }
 
     function addToWhiteList(address user) external onlyMutiSigAdmin {
@@ -58,16 +65,23 @@ contract VirtualToken is ERC20, ReentrancyGuard {
         whiteList[user] = false;
     }
 
+    function getCashOutQuote(uint256 amount) public view returns (uint256 amountAfterFee) {
+        uint256 fee = (amount * cashOutFee) / 10000; 
+        amountAfterFee = amount - fee;
+    }
+
     function cashIn() external payable onlyWhiteListed {
         _transferAssetFromUser(msg.value);
         _mint(msg.sender, msg.value);
         emit Wrap(msg.sender, msg.value);
     }
 
-    function cashOut(uint256 amount) external onlyWhiteListed {
+    function cashOut(uint256 amount) external onlyWhiteListed returns (uint256 amountAfterFee) {
+        amountAfterFee = getCashOutQuote(amount);
+
         _burn(msg.sender, amount);
-        _transferAssetToUser(amount);
-        emit Unwrap(msg.sender, amount);
+        _transferAssetToUser(amountAfterFee);
+        emit Unwrap(msg.sender, amountAfterFee);
     }
 
     function takeLoan(address to, uint256 amount) external payable nonReentrant onlyFactory {
