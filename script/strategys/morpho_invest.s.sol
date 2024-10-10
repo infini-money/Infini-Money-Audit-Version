@@ -12,6 +12,8 @@ contract MorphoInvestScript is Script {
     // forge script script/strategys/morpho_invest.s.sol:MorphoInvestScript --rpc-url https://eth-pokt.nodies.app --broadcast --legacy
     function run() external {
         // 1. send usdc to infiniCardVault
+        address morpho_strategy = 0x8D859BA19cC903cb71F7d36390f694c76821fCE2;
+        address payable infiniCardVault = payable(0xB26AaA980fEADD4E06E51ff435d1ac9617D9FAcc);
 
         uint256 adminPrivateKey = vm.envUint("ADMIN_PRIVATE_KEY");
         address adminRole = vm.addr(adminPrivateKey);
@@ -20,16 +22,11 @@ contract MorphoInvestScript is Script {
 
         address USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
 
-        // uint256 usdcBalance = IERC20(USDC).balanceOf(adminRole);
-        // IERC20(USDC).transfer(infiniCardVault, usdcBalance);
+        uint256 usdcBalance = IERC20(USDC).balanceOf(adminRole);
+        IERC20(USDC).transfer(infiniCardVault, usdcBalance);
 
         // 2. deposit usdc to morpho
-        address vault = 0x09E52AA36484c20288D9C148458Ea4DA991118Af;
-        address morpho = 0x6ac25F85a8fA9a7D77B3f2165103Fc0F09642B6A;
-        address payable infiniCardVault = payable(0x09E52AA36484c20288D9C148458Ea4DA991118Af);
-
-        uint256 usdcBalance = IERC20(USDC).balanceOf(vault);
-        InfiniCardVault(infiniCardVault).invest(address(morpho), usdcBalance, "");
+        InfiniCardVault(infiniCardVault).invest(address(morpho_strategy), usdcBalance, "");
 
         vm.stopBroadcast();
 

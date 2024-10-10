@@ -1,7 +1,7 @@
 {
   "transactions": [
     {
-      "hash": "0x053897bddae0e7adf4b67fec333702eeeee1ee729099459ea1f1e00ada5e3b79",
+      "hash": null,
       "transactionType": "CREATE",
       "contractName": "InfiniCardVault",
       "contractAddress": "0xb26aaa980feadd4e06e51ff435d1ac9617d9facc",
@@ -23,7 +23,7 @@
       "isFixedGasLimit": false
     },
     {
-      "hash": "0x5eebde75c0e014932de746d659849b04afa439e1612173492e32b999c5d69ecc",
+      "hash": null,
       "transactionType": "CALL",
       "contractName": "InfiniCardVault",
       "contractAddress": "0xb26aaa980feadd4e06e51ff435d1ac9617d9facc",
@@ -45,7 +45,7 @@
       "isFixedGasLimit": false
     },
     {
-      "hash": "0x00b12bb44560f1b6c860a67f951bb7996a0b4448430d5d8394bb4e6785c01470",
+      "hash": null,
       "transactionType": "CALL",
       "contractName": "InfiniCardVault",
       "contractAddress": "0xb26aaa980feadd4e06e51ff435d1ac9617d9facc",
@@ -66,7 +66,7 @@
       "isFixedGasLimit": false
     },
     {
-      "hash": "0xf02ee375760bb2bc98586fc240aada70c9af3cbdbeda0d2eab347b561ffe211e",
+      "hash": null,
       "transactionType": "CREATE",
       "contractName": "InfiniEthenaStrategyVault",
       "contractAddress": "0x2125c2bdd038f5469dcc841059d9f1429929c7c1",
@@ -90,7 +90,7 @@
       "isFixedGasLimit": false
     },
     {
-      "hash": "0xb246cc5f7b812deeced48a1c939e46daa46ec2143333355297ecbe29f5df32d1",
+      "hash": null,
       "transactionType": "CALL",
       "contractName": "InfiniCardVault",
       "contractAddress": "0xb26aaa980feadd4e06e51ff435d1ac9617d9facc",
@@ -181,15 +181,9 @@
   ],
   "receipts": [],
   "libraries": [],
-  "pending": [
-    "0x053897bddae0e7adf4b67fec333702eeeee1ee729099459ea1f1e00ada5e3b79",
-    "0x5eebde75c0e014932de746d659849b04afa439e1612173492e32b999c5d69ecc",
-    "0x00b12bb44560f1b6c860a67f951bb7996a0b4448430d5d8394bb4e6785c01470",
-    "0xf02ee375760bb2bc98586fc240aada70c9af3cbdbeda0d2eab347b561ffe211e",
-    "0xb246cc5f7b812deeced48a1c939e46daa46ec2143333355297ecbe29f5df32d1"
-  ],
+  "pending": [],
   "returns": {},
-  "timestamp": 1728199294,
+  "timestamp": 1728199237,
   "chain": 1,
   "commit": "7fc8498"
 }

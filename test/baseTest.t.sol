@@ -39,7 +39,6 @@ contract BaseTest is Test {
         deployerPrivateKey = vm.envUint("ADMIN_PRIVATE_KEY");
         delegateSinger = vm.addr(deployerPrivateKey);
         vm.createSelectFork("https://rpc.mevblocker.io");
-        
 
         infiniCardVault = new InfiniCardVault(shaneson, shaneson, shaneson);
 

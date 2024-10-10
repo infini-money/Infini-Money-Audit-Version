@@ -17,7 +17,7 @@ contract MorphoTesting is Test {
     function test_checkbalance() public {
         vm.createSelectFork("https://rpc.mevblocker.io");
 
-        uint256 shares = 1628206300286549776160233;
+        uint256 shares = IERC4626(market).balanceOf(christian);
         uint256 previewRedeemVaule = IERC4626(market).previewRedeem(shares);
        
         vm.startPrank(christian);
