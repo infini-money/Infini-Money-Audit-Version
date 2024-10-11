@@ -13,7 +13,6 @@ import {IPoolFactory} from "./interfaces/Uniswap/IPoolFactory.sol";
 import {LamboV2Router} from "./LamboV2Router.sol";
 
 contract V2Factory {
-    
     uint256 public tokenNonce;
     address public multiSig;
     address payable public dexFees;
@@ -22,7 +21,7 @@ contract V2Factory {
     address public lamboRouter;
     
     event TokenDeployed(address quoteToken);
-    event PoolCreated(address quoteToken, address pool);
+    event PoolCreated(address virtualLiquidityToken, address quoteToken, address pool, uint256 virtualLiquidityAmount);
 
     constructor(address _multiSig, address payable _dexFees, address _lamboTokenImplementation, address _virtualLiquidityToken) {
         tokenNonce = 1;
@@ -76,9 +75,7 @@ contract V2Factory {
         IPool(pool).mint(dexFees);
         DexFees(payable(dexFees)).BurnOrLockedFees(address(pool));
 
-        emit PoolCreated(quoteToken, pool);
+        emit PoolCreated(virtualLiquidityToken, quoteToken, pool, virtualLiquidityAmount);
     }
-
-
 
 }

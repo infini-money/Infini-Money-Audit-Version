@@ -10,8 +10,8 @@ import "forge-std/console2.sol";
 
 contract DeployPool is Script {
 
-    address FactoryAddress = 0xda49A477d4a3f916c7A57e8f65415AE483a94ABA;
-    address vETH = 0x449E9E722b3eBc27139bf5cac681867e4181303A;
+    address FactoryAddress = 0x28ABC402F84A870CAdDd289a2c0e5231426E13cb;
+    address vETH = 0x3479AF87f1587B8164700d9732CFFdeB7cf32522;
     // forge script script/DeployPool.s.sol --rpc-url https://base-rpc.publicnode.com --broadcast -vvvv --legacy
     function run() external {
         uint256 privateKey = vm.envUint("PRIVATE_KEY");

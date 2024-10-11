@@ -12,6 +12,17 @@ contract GeneralTest is BaseTest {
     function setUp() public override {
         super.setUp();
     }
+
+    function test_createLaunchPad_exceeding_100ETH() public {
+
+        vm.expectRevert("Loan limit per block exceeded");
+        factory.createLaunchPad("LamboTokenV2", "LAMBO", 300 ether + 1, address(vETH));
+
+        vm.roll(block.number + 1);
+
+        factory.createLaunchPad("LamboTokenV2", "LAMBO", 300 ether, address(vETH));
+        
+    }
     
     // vETH <-> Meme into Uniswap
     function test_createLaunchPad_with_virtual_token_and_buy_sell() public {

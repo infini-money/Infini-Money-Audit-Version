@@ -11,6 +11,9 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     address public factory;
     address public underlyingToken;
     uint256 public cashOutFee;
+    uint256 public constant MAX_LOAN_PER_BLOCK = 300 ether;
+    uint256 public lastLoanBlock;
+    uint256 public loanedAmountThisBlock;
 
     mapping(address => uint256) public _debt;
     mapping(address => bool) public whiteList;
@@ -85,6 +88,13 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     }
 
     function takeLoan(address to, uint256 amount) external payable nonReentrant onlyFactory {
+        if (block.number > lastLoanBlock) {
+            lastLoanBlock = block.number;
+            loanedAmountThisBlock = 0;
+        }
+        require(loanedAmountThisBlock + amount <= MAX_LOAN_PER_BLOCK, "Loan limit per block exceeded");
+
+        loanedAmountThisBlock += amount;
         _mint(to, amount);
         _increaseDebt(to, amount);
 
