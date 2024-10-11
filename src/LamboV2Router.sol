@@ -88,7 +88,7 @@ contract LamboV2Router {
         assert(IERC20(quoteToken).transfer(pair, amountYIn));
 
         // Perform the swap
-        (uint amount0Out, uint amount1Out) = quoteToken < vETH ? (uint(0), amountXOut) : (amountXOut, uint(0));
+        (uint256 amount0Out, uint256 amount1Out) = quoteToken < vETH ? (uint256(0), amountXOut) : (amountXOut, uint256(0));
         IUniswapV2Pair(pair).swap(amount0Out, amount1Out, address(this), new bytes(0));
 
         // Convert vETH to ETH and send to the user
@@ -124,7 +124,7 @@ contract LamboV2Router {
         assert(VirtualToken(vETH).transfer(pair, amountXIn));
 
         // Perform the swap
-        (uint amount0Out, uint amount1Out) = vETH < quoteToken ? (uint(0), amountYOut) : (amountYOut, uint(0));
+        (uint256 amount0Out, uint256 amount1Out) = vETH < quoteToken ? (uint256(0), amountYOut) : (amountYOut, uint256(0));
         IUniswapV2Pair(pair).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
 
         // Check if the received amount meets the minimum return requirement
