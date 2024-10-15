@@ -34,8 +34,7 @@ contract BaseTest is Test {
         factory = new V2Factory(
             multiSigAdmin,
             payable(address(dexFees)),
-            address(lamboTokenV2),
-            address(vETH)
+            address(lamboTokenV2)
         );
 
         aggregatorRouter = new AggregationRouterV6(IWETH(LaunchPadUtils.WETH));
@@ -50,7 +49,9 @@ contract BaseTest is Test {
         vm.startPrank(multiSigAdmin);
         vETH.updateFactory(address(factory));
         vETH.addToWhiteList(address(lamboRouter));
+        
         factory.setLamboRouter(address(lamboRouter));
+        factory.addVTokenWhiteList(address(vETH));
         vm.stopPrank();
     }
 }

@@ -33,8 +33,7 @@ contract DeployAll is Script {
         V2Factory factory = new V2Factory(
             multiSigAdmin,
             payable(address(dexFees)),
-            address(lamboTokenV2),
-            address(vETH)
+            address(lamboTokenV2)
         );
         console2.log("V2Factory address:", address(factory));
 
@@ -52,7 +51,9 @@ contract DeployAll is Script {
         vETH.updateFactory(address(factory));
         vETH.addToWhiteList(address(lamboRouter));
         vETH.addToWhiteList(multiSigAdmin);
+        
         factory.setLamboRouter(address(lamboRouter));
+        factory.addVTokenWhiteList(address(vETH));
         vm.stopBroadcast();
         
     }
