@@ -42,16 +42,16 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     }
 
     constructor(
-        string memory name, 
-        string memory symbol, 
-        address _underlyingToken, 
+        string memory name,
+        string memory symbol,
+        address _underlyingToken,
         address _mutiSigAdmin
     ) ERC20(name, symbol) {
         underlyingToken = _underlyingToken;
         mutiSigAdmin = _mutiSigAdmin;
-        cashOutFee = 20; 
-    }        
-    
+        cashOutFee = 20;
+    }
+
     function updateFactory(address _factory) external onlyMutiSigAdmin {
         factory = _factory;
     }
@@ -69,7 +69,7 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     }
 
     function getCashOutQuote(uint256 amount) public view returns (uint256 amountAfterFee) {
-        uint256 fee = (amount * cashOutFee) / 10000; 
+        uint256 fee = (amount * cashOutFee) / 10000;
         amountAfterFee = amount - fee;
     }
 
@@ -107,7 +107,7 @@ contract VirtualToken is ERC20, ReentrancyGuard {
 
         emit LoanRepaid(msg.sender, amount);
     }
-    
+
     function getLoanDebt(address user) external view returns (uint256) {
         return _debt[user];
     }
@@ -139,9 +139,8 @@ contract VirtualToken is ERC20, ReentrancyGuard {
 
     // override the _update function to prevent overflow
     function _update(address from, address to, uint256 value) internal override {
-
         // check: balance - _debt < value
-        if (from != address(0) && balanceOf(from)  < value + _debt[from]) {
+        if (from != address(0) && balanceOf(from) < value + _debt[from]) {
             revert DebtOverflow(from, _debt[from], value);
         }
 

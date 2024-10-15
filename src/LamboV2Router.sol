@@ -7,7 +7,6 @@ import {VirtualToken} from "./VirtualToken.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {V2Factory} from "./V2Factory.sol";
 
-
 contract LamboV2Router {
     address public constant NATIVE_TOKEN = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
@@ -30,8 +29,17 @@ contract LamboV2Router {
         uint256 virtualLiquidityAmount,
         address virtualLiquidityToken,
         uint256 buyAmount
-    ) public payable returns (address quoteToken, address pool, uint256 amountYOut) {
-        (quoteToken, pool) = V2Factory(lamboFactory).createLaunchPad(name, tickname, virtualLiquidityAmount, virtualLiquidityToken);
+    ) 
+        public 
+        payable 
+        returns (address quoteToken, address pool, uint256 amountYOut) 
+    {
+        (quoteToken, pool) = V2Factory(lamboFactory).createLaunchPad(
+            name, 
+            tickname, 
+            virtualLiquidityAmount, 
+            virtualLiquidityToken
+        );
 
         amountYOut = _buyQuote(quoteToken, buyAmount, 0);
     }
@@ -39,9 +47,17 @@ contract LamboV2Router {
     function getBuyQuote(
         address targetToken,
         uint256 amountIn
-    ) public view returns(uint256 amount) {
+    ) 
+        public 
+        view 
+        returns (uint256 amount) 
+    {
         // TIPs: ETH -> vETH = 1:1
-        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, vETH, targetToken);
+        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(
+            uniswapV2Factory, 
+            vETH, 
+            targetToken
+        );
 
         // Calculate the amount of Meme to be received
         amount = UniswapV2Library.getAmountOut(amountIn, reserveIn, reserveOut);
@@ -50,9 +66,17 @@ contract LamboV2Router {
     function getSellQuote(
         address targetToken,
         uint256 amountIn
-    ) public view returns(uint256 amount) {
+    ) 
+        public 
+        view 
+        returns (uint256 amount) 
+    {
         // TIPS: vETH -> ETH = 1: 1 - fee
-        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, targetToken, vETH);
+        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(
+            uniswapV2Factory, 
+            targetToken, 
+            vETH
+        );
 
         // get vETH Amount
         uint256 amountXOut = UniswapV2Library.getAmountOut(amountIn, reserveIn, reserveOut);
@@ -65,7 +89,11 @@ contract LamboV2Router {
         address quoteToken,
         uint256 amountXIn,
         uint256 minReturn
-    ) public payable returns(uint256 amountYOut) {
+    ) 
+        public 
+        payable 
+        returns (uint256 amountYOut) 
+    {
         amountYOut = _buyQuote(quoteToken, amountXIn, minReturn);
     }
 
@@ -73,12 +101,22 @@ contract LamboV2Router {
         address quoteToken,
         uint256 amountYIn,
         uint256 minReturn
-    ) public returns(uint256 amountXOut) {
-        require(IERC20(quoteToken).transferFrom(msg.sender, address(this), amountYIn), "Transfer failed");
+    ) 
+        public 
+        returns (uint256 amountXOut) 
+    {
+        require(
+            IERC20(quoteToken).transferFrom(msg.sender, address(this), amountYIn), 
+            "Transfer failed"
+        );
 
         address pair = UniswapV2Library.pairFor(uniswapV2Factory, quoteToken, vETH);
 
-        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, quoteToken, vETH);
+        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(
+            uniswapV2Factory, 
+            quoteToken, 
+            vETH
+        );
 
         // Calculate the amount of vETH to be received
         amountXOut = UniswapV2Library.getAmountOut(amountYIn, reserveIn, reserveOut);
@@ -88,7 +126,9 @@ contract LamboV2Router {
         assert(IERC20(quoteToken).transfer(pair, amountYIn));
 
         // Perform the swap
-        (uint256 amount0Out, uint256 amount1Out) = quoteToken < vETH ? (uint256(0), amountXOut) : (amountXOut, uint256(0));
+        (uint256 amount0Out, uint256 amount1Out) = quoteToken < vETH 
+            ? (uint256(0), amountXOut) 
+            : (amountXOut, uint256(0));
         IUniswapV2Pair(pair).swap(amount0Out, amount1Out, address(this), new bytes(0));
 
         // Convert vETH to ETH and send to the user
@@ -101,19 +141,25 @@ contract LamboV2Router {
 
         // Emit the swap event
         emit SellQuote(quoteToken, amountYIn, amountXOut);
-
     }
 
     function _buyQuote(
         address quoteToken,
         uint256 amountXIn,
         uint256 minReturn
-    ) internal returns(uint256 amountYOut) {
+    ) 
+        internal 
+        returns (uint256 amountYOut) 
+    {
         require(msg.value >= amountXIn, "Insufficient msg.value");
         
         address pair = UniswapV2Library.pairFor(uniswapV2Factory, vETH, quoteToken);
         
-        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(uniswapV2Factory, vETH, quoteToken);
+        (uint256 reserveIn, uint256 reserveOut) = UniswapV2Library.getReserves(
+            uniswapV2Factory, 
+            vETH, 
+            quoteToken
+        );
 
         // Calculate the amount of quoteToken to be received
         amountYOut = UniswapV2Library.getAmountOut(amountXIn, reserveIn, reserveOut);
@@ -124,7 +170,9 @@ contract LamboV2Router {
         assert(VirtualToken(vETH).transfer(pair, amountXIn));
 
         // Perform the swap
-        (uint256 amount0Out, uint256 amount1Out) = vETH < quoteToken ? (uint256(0), amountYOut) : (amountYOut, uint256(0));
+        (uint256 amount0Out, uint256 amount1Out) = vETH < quoteToken 
+            ? (uint256(0), amountYOut) 
+            : (amountYOut, uint256(0));
         IUniswapV2Pair(pair).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
 
         // Check if the received amount meets the minimum return requirement
@@ -136,7 +184,6 @@ contract LamboV2Router {
         }
         
         emit BuyQuote(quoteToken, amountXIn, amountYOut);
-
     }
 
     receive() external payable {}
