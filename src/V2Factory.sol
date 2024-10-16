@@ -22,6 +22,7 @@ contract V2Factory {
 
     event TokenDeployed(address quoteToken);
     event PoolCreated(address virtualLiquidityToken, address quoteToken, address pool, uint256 virtualLiquidityAmount);
+    event LiquidityAdded(address virtualLiquidityToken, address quoteToken, uint256 amountVirtualDesired, uint256 amountQuoteOptimal);
 
     constructor(address _multiSig, address payable _dexFees, address _lamboTokenImplementation) {
         tokenNonce = 1;
@@ -102,5 +103,7 @@ contract V2Factory {
 
         IPool(pool).mint(dexFees);
         DexFees(payable(dexFees)).BurnOrLockedFees(address(pool));
+
+        emit LiquidityAdded(virtualLiquidityToken, quoteToken, amountVirtualDesired, amountQuoteOptimal);
     }
 }
