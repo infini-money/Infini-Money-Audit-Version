@@ -18,7 +18,7 @@ InfiniCard Vault is a centrally managed contract platform designed to efficientl
 
 
 ## Core Vault InfiniCardVault
-nfiniCardVault is a contract designed for backend integration, allowing backend operations such as deposits and withdrawals through this contract.
+infiniCardVault is a contract designed for backend integration, allowing backend operations such as deposits and withdrawals through this contract.
 ### DepositToVault
 The administrator will transfer money directly from the CEX to the InfiniCardVault contract. Then the strategy administrator will call the investment function to transfer the tokens to the corresponding strategy contract.
 
