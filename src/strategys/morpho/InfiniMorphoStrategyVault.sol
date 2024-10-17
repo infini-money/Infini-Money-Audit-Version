@@ -13,7 +13,7 @@ contract InfiniMorphoStrategyVault is BaseStrategyVault, IStrategyManager {
     address public immutable infiniTreasure;
 
     string public constant override name = "InfiniMorphoStrategy";
-    uint256 carryRate = 500;
+    uint256 public carryRate = 500;
     
     constructor(
         address _adminRole, 
@@ -27,6 +27,10 @@ contract InfiniMorphoStrategyVault is BaseStrategyVault, IStrategyManager {
     {
         market = _market;
         infiniTreasure = _treasure;
+    }
+
+    function setCarryRate(uint256 _carryRate) external onlyRole(ADMIN_ROLE) {
+        carryRate = _carryRate;
     }
 
     function getProfit() public view returns (uint256) {
