@@ -33,11 +33,6 @@ contract InfiniCardVault is IInfiniCardVault, InfiniCardController, VaultUtils {
         return tokenList;
     }   
 
-    // Function to get the list of custodians
-    function getCusdianList() external view returns (address[] memory) {
-        return custodianList;
-    }
-
     // Function to get the token reserves
     function getTokensReserve() public view returns (TokenReserve[] memory) {
         TokenReserve[] memory reserves = new TokenReserve[](tokenList.length);

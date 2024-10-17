@@ -17,7 +17,7 @@ contract MorphoDisvestScript is Script {
     function run() external {
 
         uint256 adminPrivateKey = vm.envUint("ADMIN_PRIVATE_KEY");
-        address adminRole = vm.addr(adminPrivateKey);
+        // address adminRole = vm.addr(adminPrivateKey);
 
         vm.startBroadcast(adminPrivateKey);
 
