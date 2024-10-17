@@ -69,9 +69,9 @@ abstract contract BaseStrategyVault is IStrategyVault, AccessControl {
 
     function name() virtual external view returns (string memory) {}
 
-    function deposit(uint256 _amount) virtual external {}
+    function deposit(uint256 _amount,  bytes calldata) virtual external {}
 
-    function redeem(uint256 _amount) virtual external returns (uint256 actualRedeemedAmount) {}
+    function redeem(uint256 _amount, bytes calldata) virtual external returns (uint256 actualRedeemedAmount) {}
 
     function harvest() external returns (uint256 amount) {}
 }

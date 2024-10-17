@@ -11,10 +11,11 @@ import {InfiniMorphoStrategyVault} from "../../src/strategys/morpho/InfiniMorpho
 contract PreviewInvestInfoScript is Script {
 
     // forge script script/strategys/preview_investInfo.s.sol:PreviewInvestInfoScript --rpc-url https://eth.llamarpc.com
-    function run() external {
+    function run() view external {
+        // address infiniCardVault = 0x09E52AA36484c20288D9C148458Ea4DA991118Af;
+        // address USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+
         address morpho = 0x6ac25F85a8fA9a7D77B3f2165103Fc0F09642B6A;
-        address USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
-        address infiniCardVault = 0x09E52AA36484c20288D9C148458Ea4DA991118Af;
         address market = 0xd63070114470f685b75B74D60EEc7c1113d33a3D;
         
         uint256 shares = IERC20(market).balanceOf(morpho);
