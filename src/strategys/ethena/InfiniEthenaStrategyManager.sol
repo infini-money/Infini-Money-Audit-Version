@@ -17,7 +17,7 @@ contract InfiniEthenaStrategyManager is BaseStrategyManager {
 
     function getStrategyStatus() external view override returns (StrategyStatus memory status) {
         status = StrategyStatus({
-            poistion: IStrategyVault(strategyVault).getPosition(),
+            position: IStrategyVault(strategyVault).getPosition(),
             profit: _getProfit(),
             underlyingToken: IStrategyVault(strategyVault).underlyingToken(),
             strategyAddress: address(strategyVault)

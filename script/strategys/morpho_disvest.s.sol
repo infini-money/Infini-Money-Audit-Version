@@ -28,7 +28,7 @@ contract MorphoDisvestScript is Script {
         address market = 0xd63070114470f685b75B74D60EEc7c1113d33a3D;
         address shaneson = 0x790ac11183ddE23163b307E3F7440F2460526957;
 
-        // get poistion
+        // get position
         uint256 shares = IERC20(market).balanceOf(morpho);
         console.log("balance", shares);
 

@@ -151,7 +151,7 @@ contract EthenaStrategyTesting is BaseTest, StrategyUtils {
 
         status = infiniEthenaStrategyManager.getStrategyStatus();
         require(status.profit == 0, "CHECK profit2");
-        require(status.poistion == unsettleAmount - protocolProfit, "CHECK profit3");
+        require(status.position == unsettleAmount - protocolProfit, "CHECK profit3");
 
         vm.stopPrank();
     }

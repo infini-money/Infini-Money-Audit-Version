@@ -6,7 +6,7 @@ interface IStrategyManager {
 
     event Settlement(address profitToken, uint256 protocolProfit, uint256 settleProfit);
     struct StrategyStatus {
-        uint256 poistion;
+        uint256 position;
         uint256 profit;
         address underlyingToken;
         address strategyAddress;

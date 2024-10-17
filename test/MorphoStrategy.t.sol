@@ -69,7 +69,7 @@ contract MorphoStrategyTesting is BaseTest, StrategyUtils {
  
         IStrategyManager.StrategyStatus memory status = IStrategyManager(address(infiniMorphoStrategy)).getStrategyStatus();
   
-        require(status.poistion == 2 * amount - actualAmount, "check status posistion");
+        require(status.position == 2 * amount - actualAmount, "check status posistion");
         require(status.profit == _profit2, "check status profit");
     }
 }

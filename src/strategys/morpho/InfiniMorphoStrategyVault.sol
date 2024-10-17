@@ -48,7 +48,7 @@ contract InfiniMorphoStrategyVault is BaseStrategyVault, IStrategyManager {
 
     function getStrategyStatus() external view override returns (StrategyStatus memory status) {
         status = StrategyStatus({
-            poistion: vaultPosition,
+            position: vaultPosition,
             profit: getProfit(),
             underlyingToken: underlyingToken,
             strategyAddress: address(this)

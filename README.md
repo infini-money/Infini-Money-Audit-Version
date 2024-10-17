@@ -115,7 +115,7 @@ Redeem some of the positions from Morpho's Vault, minus the vaultPosition positi
 
 3）settle
 
-The undistributed effortless interest is distributed into the poistion, part of which is collected into the treasury and part of which is reinvested in the position.
+The undistributed effortless interest is distributed into the position, part of which is collected into the treasury and part of which is reinvested in the position.
 
 ```solidity
     function settle(uint256 unSettleProfit) external onlyRole(ADMIN_ROLE) {
@@ -183,7 +183,7 @@ contract InfiniEthenaStrategyManager is BaseStrategyManager {
 
     function getStrategyStatus() external view override returns (StrategyStatus memory status) {
         status = StrategyStatus({
-            poistion: IStrategyVault(strategyVault).getPosition(),
+            position: IStrategyVault(strategyVault).getPosition(),
             profit: _getProfit(),
             underlyingToken: IStrategyVault(strategyVault).underlyingToken(),
             strategyAddress: address(strategyVault)
