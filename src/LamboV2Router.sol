@@ -134,7 +134,8 @@ contract LamboV2Router {
         // Convert vETH to ETH and send to the user
         // amountXOut will get the fee
         amountXOut = VirtualToken(vETH).cashOut(amountXOut);
-        payable(msg.sender).transfer(amountXOut);
+        (bool success, ) = msg.sender.call{value: amountXOut}("");
+        require(success, "Transfer failed");
 
         // Check if the received amount meets the minimum return requirement
         require(amountXOut >= minReturn, "MinReturn Error");
