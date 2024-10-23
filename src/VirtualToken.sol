@@ -14,6 +14,7 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     uint256 public constant MAX_LOAN_PER_BLOCK = 300 ether;
     uint256 public lastLoanBlock;
     uint256 public loanedAmountThisBlock;
+    uint256 public totalCashOutFeesCollected;
 
     mapping(address => uint256) public _debt;
     mapping(address => bool) public whiteList;
@@ -80,7 +81,9 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     }
 
     function cashOut(uint256 amount) external onlyWhiteListed returns (uint256 amountAfterFee) {
-        amountAfterFee = getCashOutQuote(amount);
+        uint256 fee = (amount * cashOutFee) / 10000;
+        totalCashOutFeesCollected += fee;
+        amountAfterFee = amount - fee;
 
         _burn(msg.sender, amount);
         _transferAssetToUser(amountAfterFee);
@@ -131,7 +134,8 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     function _transferAssetToUser(uint256 amount) internal {
         if (underlyingToken == LaunchPadUtils.NATIVE_TOKEN) {
             require(address(this).balance >= amount, "Insufficient ETH balance");
-            payable(msg.sender).transfer(amount);
+            (bool success, ) = msg.sender.call{value: amount}("");
+            require(success, "Transfer failed");
         } else {
             IERC20(underlyingToken).transfer(msg.sender, amount);
         }
@@ -148,8 +152,12 @@ contract VirtualToken is ERC20, ReentrancyGuard {
     }
 
     function withdraw(uint256 amount) external onlyMutiSigAdmin nonReentrant {
+        require(amount <= totalCashOutFeesCollected, "Withdraw amount exceeds collected fees");
         require(address(this).balance >= amount, "Insufficient balance");
-        payable(mutiSigAdmin).transfer(amount);
+
+        totalCashOutFeesCollected -= amount;
+        (bool success, ) = mutiSigAdmin.call{value: amount}("");
+        require(success, "Transfer failed");
         emit Withdraw(mutiSigAdmin, amount);
     }
 }

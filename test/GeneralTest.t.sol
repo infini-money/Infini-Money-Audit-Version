@@ -83,11 +83,29 @@ contract GeneralTest is BaseTest {
         // withdraw gas 
         vm.startPrank(multiSigAdmin);
         uint256 initialBalance = address(multiSigAdmin).balance;
+        vm.expectRevert("Withdraw amount exceeds collected fees");
         vETH.withdraw(10 ether);
         uint256 finalBalance = address(multiSigAdmin).balance;
-        assert(finalBalance == initialBalance + 10 ether);
         vm.stopPrank();
     }
+
+    function test_cashIn_and_withdraw_onFees() public {
+        (address quoteToken, address pool) = factory.createLaunchPad("LamboTokenV2", "LAMBO", 10 ether, address(vETH));
+        uint256 amountQuoteOut = lamboRouter.getBuyQuote(quoteToken, 10 ether);
+        uint256 amountOut = lamboRouter.buyQuote{value: 10 ether}(quoteToken, 10 ether, 0);
+        require(amountOut == amountQuoteOut, "getBuyQuote error");
+
+        IERC20(quoteToken).approve(address(lamboRouter), amountOut);
+        lamboRouter.sellQuote(quoteToken, amountOut, 0);
+
+        // withdraw gas 
+        vm.startPrank(multiSigAdmin);
+        uint256 initialBalance = address(multiSigAdmin).balance;
+        vETH.withdraw(10 ether * 0.002 * 0.002);
+        uint256 finalBalance = address(multiSigAdmin).balance;
+        vm.stopPrank();
+    }
+
 
     function test_create_uniswapV3_pool() public {
         
