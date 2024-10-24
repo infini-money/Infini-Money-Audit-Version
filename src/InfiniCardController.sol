@@ -10,7 +10,7 @@ contract InfiniCardController is AccessControl, StrategyUtils {
     address[] tokenList;
 
     error StrategyInvalid();
-    error CustianInvalid(); 
+    error CustodianInvalid(); 
     error TokenInvalid();
     error TokenMismatch();
 
@@ -51,11 +51,11 @@ contract InfiniCardController is AccessControl, StrategyUtils {
         strategyWhiteList[strategy] = false;
     }
 
-    function addCusdianToWhiteList(address cusdian) onlyRole(ADMIN_ROLE) external {
+    function addCustodianToWhiteList(address cusdian) onlyRole(ADMIN_ROLE) external {
         custodianWhiteList[cusdian] = true;
     }
 
-    function removeCusdianToWhiteList(address cusdian) onlyRole(ADMIN_ROLE) external {
+    function removeCustodianToWhiteList(address cusdian) onlyRole(ADMIN_ROLE) external {
         custodianWhiteList[cusdian] = false;
     }
 
@@ -93,9 +93,9 @@ contract InfiniCardController is AccessControl, StrategyUtils {
         }
     }
 
-    function _isCusdianValid(address cusdian) internal view  {
+    function _isCustodianValid(address cusdian) internal view  {
         if (!custodianWhiteList[cusdian]) {
-            revert CustianInvalid();
+            revert CustodianInvalid();
         }
     }
 }

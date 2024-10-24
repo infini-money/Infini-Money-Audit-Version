@@ -71,7 +71,7 @@ contract BaseTest is Test {
         infiniCardVault.addStrategy(address(infiniEthenaStrategy));
         infiniCardVault.addStrategy(address(infiniMorphoStrategy));
 
-        infiniCardVault.addCusdianToWhiteList(shaneson);
+        infiniCardVault.addCustodianToWhiteList(shaneson);
         vm.stopPrank();
 
 

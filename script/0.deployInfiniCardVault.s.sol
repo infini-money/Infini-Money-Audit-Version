@@ -23,7 +23,7 @@ contract DeployInfiniCardVault is Script {
 
         InfiniCardVault vault = new InfiniCardVault(adminRole, adminRole, adminRole);
         vault.grantRole(vault.DEFAULT_ADMIN_ROLE(), adminRole);
-        vault.addCusdianToWhiteList(shaneson);
+        vault.addCustodianToWhiteList(shaneson);
 
         // strategys
         address EthenaMintingAddress = 0xe3490297a08d6fC8Da46Edb7B6142E4F461b62D3;
