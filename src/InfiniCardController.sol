@@ -6,8 +6,6 @@ import {IStrategyVault} from "./interfaces/IStrategyVault.sol";
 
 contract InfiniCardController is AccessControl, StrategyUtils {
 
-    address public constant WITHDRAWOUT_STRATEGY_ADDRESS = address(0);
-
     address[] strategyList;
     address[] tokenList;
 
