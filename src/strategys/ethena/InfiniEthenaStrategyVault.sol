@@ -13,6 +13,7 @@ contract InfiniEthenaStrategyVault is BaseStrategyVault {
     string public constant override name = "InfiniEthenaStaking";
 
     event SetDelegateSigner(address delegateSigner);
+    event RemoveDelegateSigner(address delegateSigner);
 
     constructor(
         address _adminRole, 
@@ -45,4 +46,11 @@ contract InfiniEthenaStrategyVault is BaseStrategyVault {
         IEthenaMinting(ethenaMintingAddress).setDelegatedSigner(delegateSigner);
         emit SetDelegateSigner(delegateSigner);
     }
+
+    function removeDelegateSigner(address delegateSigner) external onlyRole(ADMIN_ROLE) {
+        IEthenaMinting(ethenaMintingAddress).removeDelegatedSigner(delegateSigner);
+        emit RemoveDelegateSigner(delegateSigner);
+    }
+
+    
 }
