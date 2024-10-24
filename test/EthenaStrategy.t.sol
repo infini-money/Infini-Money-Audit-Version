@@ -178,5 +178,11 @@ contract EthenaStrategyTesting is BaseTest, StrategyUtils {
         vm.stopPrank();
     }
 
+    function test_removeUnusedToken() public {
+        vm.startPrank(shaneson);
+        infiniCardVault.removeUnusedToken(USDCAddress);
+        vm.stopPrank();
+    }
+
 
 }
