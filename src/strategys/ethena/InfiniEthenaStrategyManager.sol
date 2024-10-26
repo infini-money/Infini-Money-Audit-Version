@@ -3,8 +3,9 @@ pragma solidity ^0.8.20;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {BaseStrategyManager} from "@InfiniCard/strategys/BaseStrategyManager.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IStrategyVault} from "@InfiniCard/interfaces/IStrategyVault.sol";
+
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"; 
 
 contract InfiniEthenaStrategyManager is BaseStrategyManager {
     using SafeERC20 for IERC20;
@@ -31,8 +32,8 @@ contract InfiniEthenaStrategyManager is BaseStrategyManager {
         uint256 protocolProfit = unSettleProfit * carryRate / 10000;
         uint256 settleProfit = unSettleProfit - protocolProfit;
 
-        IERC20(profitToken).transfer(infiniTreasure, protocolProfit);
-        IERC20(profitToken).transfer(strategyVault, settleProfit);
+        IERC20(profitToken).safeTransfer(infiniTreasure, protocolProfit); // 修改为 safeTransfer
+        IERC20(profitToken).safeTransfer(strategyVault, settleProfit); // 修改为 safeTransfer
 
         emit Settlement(profitToken, protocolProfit, settleProfit);
     }
