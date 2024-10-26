@@ -72,10 +72,32 @@ contract EthenaStrategyTesting is BaseTest, StrategyUtils {
         uint256 beforeUSDTBalance = IERC20(USDTAddress).balanceOf(address(infiniEthenaStrategy));
         uint256 beforeUSDEBalance = IERC20(USDEAddress).balanceOf(address(infiniEthenaStrategy));
 
-        vm.startPrank(minter);
+        // Remove Deletgate Signer
+        vm.startPrank(shaneson);
+        infiniEthenaStrategy.removeDelegateSigner(delegateSinger);
+        vm.stopPrank();
+
+        vm.startPrank(delegateSinger);
         IEthenaMinting.Signature memory signature = signOrder(deployerPrivateKey, digest1, IEthenaMinting.SignatureType.EIP712);
+        vm.stopPrank();
+
+        vm.startPrank(minter);
+        vm.expectRevert(IEthenaMinting.InvalidEIP712Signature.selector);
         IEthenaMinting(EthenaMintingAddress).mint(order, route, signature);
         vm.stopPrank();
+
+        vm.startPrank(shaneson);
+        infiniEthenaStrategy.setDelegateSigner(delegateSinger);
+        vm.stopPrank();
+
+        vm.startPrank(delegateSinger);
+        IEthenaMinting(EthenaMintingAddress).confirmDelegatedSigner(address(infiniEthenaStrategy));
+        vm.stopPrank();
+
+        vm.startPrank(minter);
+        IEthenaMinting(EthenaMintingAddress).mint(order, route, signature);
+        vm.stopPrank();
+
         uint256 afterUSDTalance = IERC20(USDTAddress).balanceOf(address(infiniEthenaStrategy));
         uint256 afterUSDEBalance = IERC20(USDEAddress).balanceOf(address(infiniEthenaStrategy));
 
@@ -153,6 +175,12 @@ contract EthenaStrategyTesting is BaseTest, StrategyUtils {
         require(status.profit == 0, "CHECK profit2");
         require(status.position == unsettleAmount - protocolProfit, "CHECK profit3");
 
+        vm.stopPrank();
+    }
+
+    function test_removeUnusedToken() public {
+        vm.startPrank(shaneson);
+        infiniCardVault.removeUnusedToken(USDCAddress);
         vm.stopPrank();
     }
 

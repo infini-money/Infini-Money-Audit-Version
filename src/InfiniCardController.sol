@@ -6,13 +6,11 @@ import {IStrategyVault} from "./interfaces/IStrategyVault.sol";
 
 contract InfiniCardController is AccessControl, StrategyUtils {
 
-    address public constant WITHDRAWOUT_STRATEGY_ADDRESS = address(0);
-
     address[] strategyList;
     address[] tokenList;
 
     error StrategyInvalid();
-    error CustianInvalid(); 
+    error CustodianInvalid(); 
     error TokenInvalid();
     error TokenMismatch();
 
@@ -30,6 +28,19 @@ contract InfiniCardController is AccessControl, StrategyUtils {
         _grantRole(STRATEGY_OPERATOR_ROLE, _strategy_operator_role);
         _grantRole(INFINI_BACKEND_ROLE, _infinity_backend_role);
     }
+    
+    function removeUnusedToken(address token) onlyRole(ADMIN_ROLE) external {
+        _isTokenValid(token); // Ensure the token is in the whitelist
+        tokenWhiteList[token] = false; // Remove from the whitelist
+        // Remove from tokenList
+        for (uint256 i = 0; i < tokenList.length; i++) {
+            if (tokenList[i] == token) {
+                tokenList[i] = tokenList[tokenList.length - 1]; // Replace with the last element
+                tokenList.pop(); // Remove the last element
+                break;
+            }
+        }
+    }
 
     function addStrategy(address strategy) onlyRole(ADMIN_ROLE) external {
         strategyWhiteList[strategy] = true;
@@ -40,11 +51,11 @@ contract InfiniCardController is AccessControl, StrategyUtils {
         strategyWhiteList[strategy] = false;
     }
 
-    function addCusdianToWhiteList(address cusdian) onlyRole(ADMIN_ROLE) external {
+    function addCustodianToWhiteList(address cusdian) onlyRole(ADMIN_ROLE) external {
         custodianWhiteList[cusdian] = true;
     }
 
-    function removeCusdianToWhiteList(address cusdian) onlyRole(ADMIN_ROLE) external {
+    function removeCustodianToWhiteList(address cusdian) onlyRole(ADMIN_ROLE) external {
         custodianWhiteList[cusdian] = false;
     }
 
@@ -82,10 +93,9 @@ contract InfiniCardController is AccessControl, StrategyUtils {
         }
     }
 
-    function _isCusdianValid(address cusdian) internal view  {
+    function _isCustodianValid(address cusdian) internal view  {
         if (!custodianWhiteList[cusdian]) {
-            revert CustianInvalid();
+            revert CustodianInvalid();
         }
     }
-
 }

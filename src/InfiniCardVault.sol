@@ -55,7 +55,7 @@ contract InfiniCardVault is IInfiniCardVault, InfiniCardController, VaultUtils {
         bytes calldata redeemInfo
     ) onlyRole(INFINI_BACKEND_ROLE) external returns(uint256 actualAmount) {
         _isTokenValid(token);
-        _isCusdianValid(custodian);
+        _isCustodianValid(custodian);
         actualAmount = amount;
 
         // If balance is not enough, try to withdraw from strategy

@@ -112,6 +112,8 @@ interface IEthenaMinting is IEthenaMintingEvents {
 
   function hasRole(bytes32 role, address account) external view returns (bool);
 
+  function removeDelegatedSigner(address _removedSigner) external;
+
   function setDelegatedSigner(address _delegateTo) external;
 
   function getRoleAdmin(bytes32 role) external view returns (bytes32) ;

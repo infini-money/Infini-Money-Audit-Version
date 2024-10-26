@@ -39,7 +39,7 @@ When the Admin needs to withdraw funds from InfiniCardVault to the CEX, the With
         bytes calldata redeemInfo
     ) onlyRole(INFINI_BACKEND_ROLE) external returns(uint256 actualAmount) {
         _isTokenValid(token);
-        _isCusdianValid(custodian);
+        _isCustodianValid(custodian);
         actualAmount = amount;
 
         // if balance is not enough, try to withdraw from strategy
